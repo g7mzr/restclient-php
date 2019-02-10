@@ -1,0 +1,41 @@
+<?php
+/**
+ * This file is part of RESTCLIENT
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * @package restclient-php
+ * @subpackage tests
+ * @author   Sandy McNeil <g7mzrdev@gmail.com>
+ * @copyright (c) 2019, Sandy McNeil
+ * @license https://github.com/g7mzr/restclient-php/blob/master/LICENSE GNU General Public License v3.0
+ *
+ */
+
+/**********************************************************************************
+ *          EDIT TEST CONFIGURATION BELOW TO MATCH YOUR SETUP                     *
+ **********************************************************************************/
+
+// Set the URL of the Test Server
+define ("URL", "");
+
+// Define the local ZAP Proxy
+define("HTTPPROXY", "");
+define("SSLPROXY", "");
+
+/**********************************************************************************
+ *                         DO NOT EDIT BELOW THIS POINT                           *
+ **********************************************************************************/
+
+
+// Set if Tests are to be run through is to use the ZAP PROXY
+if (getenv('UNITPROXY') == false) {
+    define("PROXY", false);
+} else {
+    if (getenv("UNITPROXY") == 'true') {
+        define("PROXY", true);
+    } else {
+        define("PROXY", false);
+    }
+}

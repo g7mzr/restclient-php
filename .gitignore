@@ -1,0 +1,10 @@
+#Git Ignore File
+*~
+*.pdf
+*.html
+constants.php
+cache.properties
+/nbproject/
+/vendor/
+/bin/
+composer.phar

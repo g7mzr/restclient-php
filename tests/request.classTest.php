@@ -111,4 +111,154 @@ class RestRequestTest extends TestCase
         $getResult = $this->restRequest->getAcceptHeader();
         $this->assertEquals($testData, $getResult);
     }
+
+    /**
+     * This function tests that URL Encoded data can be created with only one
+     * key/data pair in the array.
+     *
+     * @group unittest
+     * @group decode
+     *
+     * @return void
+     *
+     * @access public
+     */
+    public function testURLEncodedDataSingleEntry()
+    {
+        // Test there is no data when the class is initalised
+        $defaultResult = $this->restRequest->getURLEncodedData();
+        $this->assertEquals("", $defaultResult);
+
+        // Set URL Encoded Data
+        $testData = array(
+           "username" => "testuser"
+        );
+        $encodedtestdata = "username=testuser";
+        $setResult = $this->restRequest->setURLEncodedData($testData);
+        $this->assertTrue(is_a($setResult, 'g7mzr\restclient\RestRequest'));
+
+        // Test the endpoint can be retrieved
+        $getResult = $this->restRequest->getURLEncodedData();
+        $this->assertEquals($encodedtestdata, $getResult);
+    }
+
+    /**
+     * This function tests that URL Encoded data can be created with more than one
+     * key/data pair in the array.
+     *
+     * @group unittest
+     * @group decode
+     *
+     * @return void
+     *
+     * @access public
+     */
+    public function testURLEncodedDataMultipleEntries()
+    {
+        // Test there is no data when the class is initalised
+        $defaultResult = $this->restRequest->getURLEncodedData();
+        $this->assertEquals("", $defaultResult);
+
+        // Set URL Encoded Data
+        $testData = array(
+           "username" => "testuser",
+           "password" => "testpassword"
+        );
+        $encodedtestdata = http_build_query($testData);
+        $setResult = $this->restRequest->setURLEncodedData($testData);
+        $this->assertTrue(is_a($setResult, 'g7mzr\restclient\RestRequest'));
+
+        // Test the endpoint can be retrieved
+        $getResult = $this->restRequest->getURLEncodedData();
+        $this->assertEquals($encodedtestdata, $getResult);
+    }
+
+    /**
+     * This function tests that JSON Encoded data can be created with only one
+     * key/data pair in the array.
+     *
+     * @group unittest
+     * @group decode
+     *
+     * @return void
+     *
+     * @access public
+     */
+    public function testJSONEncodedDataSingleEntry()
+    {
+        // Test there is no data when the class is initalised
+        $defaultResult = $this->restRequest->getJSONEncodedData();
+        $this->assertEquals("{}", $defaultResult);
+
+        // Set URL Encoded Data
+        $testData = array(
+           "username" => "testuser"
+        );
+        $encodedtestdata = '{"username":"testuser"}';
+        $setResult = $this->restRequest->setJSONEncodedData($testData);
+        $this->assertTrue(is_a($setResult, 'g7mzr\restclient\RestRequest'));
+
+        // Test the endpoint can be retrieved
+        $getResult = $this->restRequest->getJSONEncodedData();
+        $this->assertEquals($encodedtestdata, $getResult);
+    }
+
+    /**
+     * This function tests that JSON Encoded data can be created with more than one
+     * key/data pair in the array.
+     *
+     * @group unittest
+     * @group decode
+     *
+     * @return void
+     *
+     * @access public
+     */
+    public function testJSONEncodedDataMultiple()
+    {
+        // Test there is no data when the class is initalised
+        $defaultResult = $this->restRequest->getJSONEncodedData();
+        $this->assertEquals("{}", $defaultResult);
+
+        // Set URL Encoded Data
+        $testData = array(
+           "username" => "testuser",
+           "password" => "testpassword"
+        );
+        $encodedtestdata = '{"username":"testuser","password":"testpassword"}';
+        $setResult = $this->restRequest->setJSONEncodedData($testData);
+        $this->assertTrue(is_a($setResult, 'g7mzr\restclient\RestRequest'));
+
+        // Test the endpoint can be retrieved
+        $getResult = $this->restRequest->getJSONEncodedData();
+        $this->assertEquals($encodedtestdata, $getResult);
+    }
+
+    /**
+     * This function tests that URL Arguments can be created as an array and retrieved
+     * as a string
+     *
+     * @group unittest
+     * @group decode
+     *
+     * @return void
+     *
+     * @access public
+     */
+    public function testURLArguments()
+    {
+        // Test there is no data when the class is initalised
+        $defaultResult = $this->restRequest->getURLArguments();
+        $this->assertEquals("", $defaultResult);
+
+        // Set the URL encoded arguments
+        $testData = array("users", "1");
+        $encodedtestdata = '/users/1';
+        $setResult = $this->restRequest->setURLArguments($testData);
+        $this->assertTrue(is_a($setResult, 'g7mzr\restclient\RestRequest'));
+
+        // Test the endpoint can be retrieved
+        $getResult = $this->restRequest->getURLArguments();
+        $this->assertEquals($encodedtestdata, $getResult);
+    }
 }

@@ -19,7 +19,8 @@
         "phpmd/phpmd" : "@stable",
         "sebastian/phpcpd": "*",
         "pdepend/pdepend" : "2.5.2",
-        "theseer/phpdox" : "0.11.2"
+        "theseer/phpdox" : "0.11.2",
+        "php-mock/php-mock-phpunit": "^2.1"
     },
     "autoload": {
         "psr-4": {"g7mzr\\restclient\\": "lib/" }

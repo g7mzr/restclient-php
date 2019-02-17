@@ -123,7 +123,7 @@ class Request implements RestRequest
      * Set the data to be posted to the api.  Data is passed to the function in the
      * form of an array containing a number of $key => $value pairs
      *
-     * @param array $postdata  The data to be sent to the rest API
+     * @param array $postdata The data to be sent to the rest API.
      *
      * @return Request Pointer to the RestRequest Instance being accessed
      *
@@ -131,17 +131,9 @@ class Request implements RestRequest
      */
     public function setURLEncodedData(array $postdata)
     {
-        $datastring = "";
-        $arraylength = count($postdata);
-        $currentelement = 1;
-        foreach ($postdata as $key => $value) {
-            $datastring .= $key . "=" . $value;
-            if ($currentelement < $arraylength) {
-                $datastring .= "&";
-            }
-            $currentelement = $currentelement + 1;
-        }
+        $datastring = http_build_query($postdata);
         $this->set(RestRequestType::REST_URLENCODED_DATA, $datastring);
+        return $this;
     }
 
     /**
@@ -165,7 +157,7 @@ class Request implements RestRequest
      * form of an array containing a number of $key => $value pairs and will encode
      * using JSON data format
      *
-     * @param array $postdata  The data to be sent to the rest API
+     * @param array $postdata The data to be sent to the rest API.
      *
      * @return Request Pointer to the RestRequest Instance being accessed
      *
@@ -175,6 +167,7 @@ class Request implements RestRequest
     {
         $datastring = json_encode($postdata);
         $this->set(RestRequestType::REST_JSONENCODED_DATA, $datastring);
+        return $this;
     }
 
     /**
@@ -188,9 +181,51 @@ class Request implements RestRequest
      */
     public function getJSONEncodedData()
     {
-        return $this->get(RestRequestType::REST_JSONENCODED_DATA, "");
+        return $this->get(RestRequestType::REST_JSONENCODED_DATA, "{}");
     }
 
+    /**
+     * setURLArguments
+     *
+     * This method creates a string of arguments to be added to the base URL and
+     * endpoint.
+     *
+     * @param array $arguments The arguments to be added to the URL.
+     *
+     * @return Request Pointer to the RestRequest Instance being accessed
+     *
+     * @access public
+     */
+    public function setURLArguments(array $arguments)
+    {
+        $datastring = "/";
+        $arraylength = count($arguments);
+        $currentelement = 1;
+        foreach ($arguments as $key => $value) {
+            $datastring .= $value;
+            if ($currentelement < $arraylength) {
+                $datastring .= "/";
+            }
+            $currentelement = $currentelement + 1;
+        }
+        $this->set(RestRequestType::REST_URLENCODED_ARGUMENTS, $datastring);
+        return $this;
+    }
+
+    /**
+     * getURLArguments
+     *
+     * This method returns a string containing the arguments required for the request
+     * in the for,at of a URI path.
+     *
+     * @return string URI path encode arguments
+     *
+     * @access public
+     */
+    public function getURLArguments()
+    {
+        return $this->get(RestRequestType::REST_URLENCODED_ARGUMENTS, "");
+    }
 
 
 

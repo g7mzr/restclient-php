@@ -78,7 +78,7 @@ interface RestRequest
      * form of an array containing a number of $key => $value pairs and will encode
      * using URL data format
      *
-     * @param array $postdata  The data to be sent to the rest API
+     * @param array $postdata The data to be sent to the rest API.
      *
      * @return Request Pointer to the RestRequest Instance being accessed
      *
@@ -104,7 +104,7 @@ interface RestRequest
      * form of an array containing a number of $key => $value pairs and will encode
      * using JSON data format
      *
-     * @param array $postdata  The data to be sent to the rest API
+     * @param array $postdata The data to be sent to the rest API.
      *
      * @return Request Pointer to the RestRequest Instance being accessed
      *
@@ -122,4 +122,30 @@ interface RestRequest
      * @access public
      */
     public function getJSONEncodedData();
+
+    /**
+     * setURLArguments
+     *
+     * This method creates a string of arguments to be added to the base URL and
+     * endpoint.
+     *
+     * @param array $arguments The arguments to be added to the URL.
+     *
+     * @return Request Pointer to the RestRequest Instance being accessed
+     *
+     * @access public
+     */
+    public function setURLArguments(array $arguments);
+
+    /**
+     * getURLArguments
+     *
+     * This method returns a string containing the arguments required for the request
+     * in the for,at of a URI path.
+     *
+     * @return string URI path encode arguments
+     *
+     * @access public
+     */
+    public function getURLArguments();
 }

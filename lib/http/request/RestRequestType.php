@@ -29,6 +29,7 @@ class RestRequestType
     const REST_ACCEPT_HEADER = "reastacceptheader";
     const REST_URLENCODED_DATA = "resturlencodeddata";
     const REST_JSONENCODED_DATA = "restjsonencodeddata";
+    const REST_URLENCODED_ARGUMENTS = "resturlencodedarguments";
 
     /**
      * RestRequestType Class Constructor

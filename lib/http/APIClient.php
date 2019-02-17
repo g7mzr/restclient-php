@@ -19,6 +19,7 @@ use g7mzr\restclient\RestAPIClient;
 use g7mzr\restclient\http\request\Request;
 use g7mzr\restclient\options\Options;
 use g7mzr\restclient\http\response\DecodeResponse;
+use g7mzr\restclient\common\Common;
 
 /**
  * RestAPIClient Class
@@ -36,11 +37,11 @@ class APIClient implements RestAPIClient
     private $httpResponse = "";
 
     /**
-     * property: responseError
-     * @var array
+     * property: curlresponse
+     * @var string;
      * @access private
      */
-    private $responseError;
+    private $curlResponse = array();
 
     /**
      * property: options
@@ -75,24 +76,23 @@ class APIClient implements RestAPIClient
     public function __construct(Options $options)
     {
         $this->options = $options;
-        $this->responseError = array();
         $this->headers = array();
     }
 
     /**
      * Destructor
      *
-     * This function cleans up when the resource is destroyed
+     * This function cleans up when the resource is destroyed.  Its main purpose is
+     * to delete the cookie file to prevent unauthorised access.
      *
      * @access public
      */
     public function __destruct()
     {
-        // Delete the Cookies file as it is no longer needed.
         $cookiefilename = $this->options->getCookiefile();
         if ($cookiefilename != "") {
             if (file_exists($cookiefilename)) {
-                unlink($cookiefilename);
+                unlink(realpath($cookiefilename));
             }
         }
     }
@@ -104,7 +104,7 @@ class APIClient implements RestAPIClient
      *
      * @param Request $restrequest The HTTP Request Data for the GET Method.
      *
-     * @return boolean True if the command executed correctly.  False otherwise
+     * @return boolean True if the command executed correctly.  restclient error otherwise
      *
      * @access public
      */
@@ -112,27 +112,25 @@ class APIClient implements RestAPIClient
     {
         $this->request = $restrequest;
 
-        // Initalise the responseError Array
-        $this->responseError = array();
-
         // Initalise the response string
         $this->httpResponse = "";
+
+        // Initalise the cURL response
+        $this->curlResponse = array();
 
         // Initalise the headers array
         $this->headers = array();
 
         $ch = curl_init();
-        if ($ch ===false) {
-            $this->responseError['code'] = 1;
-            $this->responseError['message'] = 'Unable to initalise cURL resource';
-            return false;
+        if ($ch === false) {
+            $code = 1;
+            $message = 'Unable to initalise cURL resource';
+            return Common::raiseError($message, $code);
         }
         $optionResult = $this->setCurlOptions($ch);
-        if ($optionResult ===false) {
-            $this->responseError['code'] = 2;
-            $this->responseError['message'] = 'Unable to set cURL options';
+        if (Common::isError($optionResult)) {
             curl_close($ch);
-            return false;
+            return $optionResult;
         }
         // Add the Headers to the curl resource
         curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
@@ -140,12 +138,16 @@ class APIClient implements RestAPIClient
         $output = curl_exec($ch);
 
         if ($output === false) {
-            $this->responseError['code'] = 3;
-            $this->responseError['message'] = 'Error running cURL';
+            $code = 3;
+            $message = curl_error($ch);
             curl_close($ch);
-            return false;
+            return Common::raiseError($message, $code);
         }
+
+        $curlresponse = curl_getinfo($ch);
         curl_close($ch);
+
+        $this->curlResponse = $curlresponse;
         $this->httpResponse = $output;
         return true;
     }
@@ -158,7 +160,7 @@ class APIClient implements RestAPIClient
      *
      * @param RestRequest $restrequest The HTTP Request Data for the HEAD Method.
      *
-     * @return boolean True if the command executed correctly.  False otherwise
+     * @return boolean True if the command executed correctly.  restclient error otherwise
      *
      * @access public
      */
@@ -166,27 +168,25 @@ class APIClient implements RestAPIClient
     {
         $this->request = $restrequest;
 
-        // Initalise the responseError Array
-        $this->responseError = array();
-
         // Initalise the response string
         $this->httpResponse = "";
+
+        // Initalise the cURL response
+        $this->curlResponse = array();
 
         // Initalise the headers array
         $this->headers = array();
 
         $ch = curl_init();
         if ($ch ===false) {
-            $this->responseError['code'] = 1;
-            $this->responseError['message'] = 'Unable to initalise cURL resource';
-            return false;
+            $code = 1;
+            $message = 'Unable to initalise cURL resource';
+            return Common::raiseError($message, $code);
         }
         $optionResult = $this->setCurlOptions($ch);
-        if ($optionResult ===false) {
-            $this->responseError['code'] = 2;
-            $this->responseError['message'] = 'Unable to set cURL options';
+        if (Common::isError($optionResult)) {
             curl_close($ch);
-            return false;
+            return $optionResult;
         }
 
         // Set specific cURL Options for the HTTP HEAD methos
@@ -198,12 +198,16 @@ class APIClient implements RestAPIClient
         $output = curl_exec($ch);
 
         if ($output === false) {
-            $this->responseError['code'] = 3;
-            $this->responseError['message'] = 'Error running cURL';
+            $code = 3;
+            $message = curl_error($ch);
             curl_close($ch);
-            return false;
+            return Common::raiseError($message, $code);
         }
+
+        $curlresponse = curl_getinfo($ch);
         curl_close($ch);
+
+        $this->curlResponse = $curlresponse;
         $this->httpResponse = $output;
         return true;
     }
@@ -216,7 +220,7 @@ class APIClient implements RestAPIClient
      *
      * @param RestRequest $restrequest The HTTP Request Data for the OPTIONS Method.
      *
-     * @return boolean True if the command executed correctly.  False otherwise
+     * @return boolean True if the command executed correctly.  restclient error otherwise
      *
      * @access public
      */
@@ -224,31 +228,30 @@ class APIClient implements RestAPIClient
     {
         $this->request = $restrequest;
 
-        // Initalise the responseError Array
-        $this->responseError = array();
-
         // Initalise the response string
         $this->httpResponse = "";
+
+        // Initalise the cURL response
+        $this->curlResponse = array();
 
         // Initalise the headers array
         $this->headers = array();
 
         $ch = curl_init();
         if ($ch ===false) {
-            $this->responseError['code'] = 1;
-            $this->responseError['message'] = 'Unable to initalise cURL resource';
-            return false;
+            $code = 1;
+            $message = 'Unable to initalise cURL resource';
+            return Common::raiseError($message, $code);
         }
         $optionResult = $this->setCurlOptions($ch);
-        if ($optionResult ===false) {
-            $this->responseError['code'] = 2;
-            $this->responseError['message'] = 'Unable to set cURL options';
+        if (Common::isError($optionResult)) {
             curl_close($ch);
-            return false;
+            return $optionResult;
         }
 
         // Set specific cURL Options for the HTTP OPTIONS method
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "OPTIONS");
+        curl_setopt($ch, CURLOPT_HEADER, 1);
 
         // Add the Headers to the curl resource
         curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
@@ -256,13 +259,26 @@ class APIClient implements RestAPIClient
         $output = curl_exec($ch);
 
         if ($output === false) {
-            $this->responseError['code'] = 3;
-            $this->responseError['message'] = 'Error running cURL';
+            $code = 3;
+            $message = curl_error($ch);
             curl_close($ch);
-            return false;
+            return Common::raiseError($message, $code);
         }
+
+        $curlresponse = curl_getinfo($ch);
         curl_close($ch);
-        $this->httpResponse = $output;
+
+        // Remove the Allow String from the returned data and add it to the curlResponse
+        $responseArray = explode("\r\n", $output);
+        foreach ($responseArray as $value) {
+            if (strpos($value, "Allow:") !== false) {
+                list($name, $data) = explode(": ", $value, 2);
+                $curlresponse['allow'] = $data;
+            }
+        }
+
+        $this->curlResponse = $curlresponse;
+        $this->httpResponse = "";
         return true;
     }
 
@@ -274,7 +290,7 @@ class APIClient implements RestAPIClient
      *
      * @param RestRequest $restrequest The HTTP Request Data for the POST Method.
      *
-     * @return boolean True if the command executed correctly.  False otherwise
+     * @return boolean True if the command executed correctly.  restclient error otherwise
      *
      * @access public
      */
@@ -282,40 +298,37 @@ class APIClient implements RestAPIClient
     {
         $this->request = $restrequest;
 
-        // Initalise the responseError Array
-        $this->responseError = array();
-
         // Initalise the response string
         $this->httpResponse = "";
+
+        // Initalise the cURL response
+        $this->curlResponse = array();
 
         // Initalise the headers array
         $this->headers = array();
 
         $ch = curl_init();
         if ($ch ===false) {
-            $this->responseError['code'] = 1;
-            $this->responseError['message'] = 'Unable to initalise cURL resource';
-            return false;
+            $code = 1;
+            $message = 'Unable to initalise cURL resource';
+            return Common::raiseError($message, $code);
         }
         $optionResult = $this->setCurlOptions($ch);
-        if ($optionResult ===false) {
-            $this->responseError['code'] = 2;
-            $this->responseError['message'] = 'Unable to set cURL options';
+        if (Common::isError($optionResult)) {
             curl_close($ch);
-            return false;
+            return $optionResult;
         }
 
         // Set specific cURL Options for the HTTP POST method
-        if($this->request->getURLEncodedData() != "") {
+        if ($this->request->getURLEncodedData() != "") {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $this->request->getURLEncodedData());
             $this->addHeader("content-type: application/x-www-form-urlencoded");
-        } elseif ($this->request->getJSONEncodedData() != "") {
+        } elseif ($this->request->getJSONEncodedData() != "{}") {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $this->request->getJSONEncodedData());
             $this->addHeader("content-type: application/json");
         } else {
             curl_setopt($ch, CURLOPT_POSTFIELDS, "");
-            $this->addHeader("content-type: application/x-www-form-urlencoded");
-
+            $this->addHeader("content-type: text/plain; charset=ISO-8859-1");
         }
 
         // Add the Headers to the curl resource
@@ -324,12 +337,16 @@ class APIClient implements RestAPIClient
         $output = curl_exec($ch);
 
         if ($output === false) {
-            $this->responseError['code'] = 3;
-            $this->responseError['message'] = 'Error running cURL';
+            $code = 3;
+            $message = curl_error($ch);
             curl_close($ch);
-            return false;
+            return Common::raiseError($message, $code);
         }
+
+        $curlresponse = curl_getinfo($ch);
         curl_close($ch);
+
+        $this->curlResponse = $curlresponse;
         $this->httpResponse = $output;
         return true;
     }
@@ -341,7 +358,7 @@ class APIClient implements RestAPIClient
      *
      * @param RestRequest $restrequest The HTTP Request Data for the PUT Method.
      *
-     * @return boolean True if the command executed correctly.  False otherwise
+     * @return boolean True if the command executed correctly.  restclient error otherwise
      *
      * @access public
      */
@@ -349,40 +366,43 @@ class APIClient implements RestAPIClient
     {
         $this->request = $restrequest;
 
-        // Initalise the responseError Array
-        $this->responseError = array();
-
         // Initalise the response string
         $this->httpResponse = "";
+
+         // Initalise the cURL response
+        $this->curlResponse = array();
 
         // Initalise the headers array
         $this->headers = array();
 
+        if ($this->request->getURLArguments() == "") {
+            $code = 4;
+            $message = 'Arguments have not been included for PUT COMMAND';
+            return Common::raiseError($message, $code);
+        }
+
         $ch = curl_init();
         if ($ch ===false) {
-            $this->responseError['code'] = 1;
-            $this->responseError['message'] = 'Unable to initalise cURL resource';
-            return false;
+            $code = 1;
+            $message = 'Unable to initalise cURL resource';
+            return Common::raiseError($message, $code);
         }
         $optionResult = $this->setCurlOptions($ch);
-        if ($optionResult ===false) {
-            $this->responseError['code'] = 2;
-            $this->responseError['message'] = 'Unable to set cURL options';
+        if (Common::isError($optionResult)) {
             curl_close($ch);
-            return false;
+            return $optionResult;
         }
 
         // Set specific cURL Options for the HTTP POST method
-        if($this->request->getURLEncodedData() != "") {
+        if ($this->request->getURLEncodedData() != "") {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $this->request->getURLEncodedData());
             $this->addHeader("content-type: application/x-www-form-urlencoded");
-        } elseif ($this->request->getJSONEncodedData() != "") {
+        } elseif ($this->request->getJSONEncodedData() != "{}") {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $this->request->getJSONEncodedData());
             $this->addHeader("content-type: application/json");
         } else {
             curl_setopt($ch, CURLOPT_POSTFIELDS, "");
-            $this->addHeader("content-type: application/x-www-form-urlencoded");
-
+            $this->addHeader("content-type: text/plain; charset=ISO-8859-1");
         }
 
         // Set specific cURL Options for the HTTP PUT method
@@ -394,30 +414,86 @@ class APIClient implements RestAPIClient
         $output = curl_exec($ch);
 
         if ($output === false) {
-            $this->responseError['code'] = 3;
-            $this->responseError['message'] = 'Error running cURL';
+            $code = 3;
+            $message = curl_error($ch);
             curl_close($ch);
-            return false;
+            return Common::raiseError($message, $code);
         }
+
+        $curlresponse = curl_getinfo($ch);
         curl_close($ch);
+
+        $this->curlResponse = $curlresponse;
         $this->httpResponse = $output;
         return true;
     }
 
 
+    /**
+     * httpDelete Method
+     *
+     * This method implements the HTTP DELETE Method
+     *
+     * @param RestRequest $restrequest The HTTP Request Data for the DELETE Method.
+     *
+     * @return boolean True if the command executed correctly.  restclient error otherwise
+     *
+     * @access public
+     */
+    public function httpDelete(Request $restrequest)
+    {
+        $this->request = $restrequest;
+
+        // Initalise the response string
+        $this->httpResponse = "";
+
+        // Initalise the cURL response
+        $this->curlResponse = array();
+
+        // Initalise the headers array
+        $this->headers = array();
+
+        if ($this->request->getURLArguments() == "") {
+            $code = 4;
+            $message = 'Arguments have not been included for DELETE COMMAND';
+            return Common::raiseError($message, $code);
+        }
+
+        $ch = curl_init();
+        if ($ch === false) {
+            $code = 1;
+            $message = 'Unable to initalise cURL resource';
+            return Common::raiseError($message, $code);
+        }
+        $optionResult = $this->setCurlOptions($ch);
+        if (Common::isError($optionResult)) {
+            curl_close($ch);
+            return $optionResult;
+        }
 
 
+        // Set specific cURL Options for the HTTP PUT method
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
 
+        // Add the Headers to the curl resource
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
 
+        $output = curl_exec($ch);
 
+        if ($output === false) {
+            $code = 3;
+            $message = curl_error($ch);
+            curl_close($ch);
+            return Common::raiseError($message, $code);
+        }
 
+        $curlresponse = curl_getinfo($ch);
+        curl_close($ch);
 
-
-
-
-
-
-
+        $this->curlResponse = $curlresponse;
+        $this->httpResponse = $output;
+        return true;
+    }
 
     /**
      * getResponce Method
@@ -430,27 +506,7 @@ class APIClient implements RestAPIClient
      */
     public function getResponse()
     {
-        if ($this->httpResponse != "") {
-            return new DecodeResponse($this->httpResponse);
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * getError
-     *
-     * Returns the APIClient Error in the form of an array with the following keys:
-     * code - The error code
-     * Message - The error Message
-     *
-     * @return array Containing the error Message and code.
-     *
-     * @access public
-     */
-    public function getError()
-    {
-        return $this->responseError;
+            return new DecodeResponse($this->curlResponse, $this->httpResponse);
     }
 
     /**
@@ -468,9 +524,9 @@ class APIClient implements RestAPIClient
     private function setCurlOptions($ch)
     {
         // Set Generic Options First
-        //return the transfer as a string and include the headers
+        //return the transfer as a string and do not include the headers
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
 
         // Set the User Agent
         if ($this->options->getUserAgent() != "") {
@@ -480,19 +536,23 @@ class APIClient implements RestAPIClient
         // Set the URL
         if (($this->options->getBaseURL() != "") and ($this->request->getEndPoint() != "")) {
             $url = $this->options->getBaseURL() . $this->request->getEndPoint();
+            if ($this->request->getURLArguments() != "") {
+                $url .= $this->request->getURLArguments();
+            }
             curl_setopt($ch, CURLOPT_URL, $url);
         } else {
-            return false;
+            $code = 2;
+            $message = 'Error Setting Base URL and End Point in setCurlOption';
+            return \g7mzr\restclient\common\Common::raiseError($message, $code);
         }
-
-        // Set the headers
-        $headers = array();
 
         // Check that the Accept Header exists and if it does add it to the array
         if ($this->request->getAcceptHeader() != "") {
             $this->addHeader("Accept: " . $this->request->getAcceptHeader());
         } else {
-            return false;
+            $code = 2;
+            $message = 'Error Setting Accept Header in setCurlOption';
+            return \g7mzr\restclient\common\Common::raiseError($message, $code);
         }
 
         // Set the Proxy if it is used
@@ -507,7 +567,6 @@ class APIClient implements RestAPIClient
             curl_setopt($ch, CURLOPT_COOKIEJAR, $this->options->getCookiefile());
             curl_setopt($ch, CURLOPT_COOKIEFILE, $this->options->getCookiefile());
         }
-
         return true;
     }
 
@@ -516,7 +575,7 @@ class APIClient implements RestAPIClient
      *
      * This function adds headers to the headers array
      *
-     * @param string $header The header to be added to the array
+     * @param string $header The header to be added to the array.
      *
      * @return boolean true
      *

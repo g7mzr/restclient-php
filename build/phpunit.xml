@@ -21,6 +21,7 @@
     verbose="false">
     <testsuites>
         <testsuite name="unit">
+           <file>../tests/curlmock.classTest.php</file>
             <file>../tests/exception.classTest.php</file>
             <file>../tests/error.classTest.php</file>
             <file>../tests/decoderesponse.classTest.php</file>
@@ -28,10 +29,8 @@
             <file>../tests/request.classTest.php</file>
         </testsuite>
         <testsuite name="restapi">
-            <file>../tests/restapi/login.classTestphp</file>
-            <file>../tests/restapi/version.classTest.php</file>
-            <file>../tests/restapi/users.classTest.php</file>
-        </testsuite>
+            <file>../tests/restapi.classTest.php</file>
+         </testsuite>
     </testsuites>
     <filter>
         <whitelist>

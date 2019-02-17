@@ -28,25 +28,11 @@ use \g7mzr\restclient\RestDecodeResponse;
 class DecodeResponse implements RestDecodeResponse
 {
     /**
-     * Property: httpresponse
-     * @var array
-     * @access private
-     */
-    private $httpresponse = array();
-
-    /**
-     * Property: Date
-     * @var integer
-     * @access private
-    */
-    private $date = 0;
-
-    /**
-     * Property: server
+     * Property: httpresponsecode
      * @var string
      * @access private
      */
-    private $server = "";
+    private $httpresponsecode = "";
 
     /**
      * Property: contentType
@@ -56,13 +42,6 @@ class DecodeResponse implements RestDecodeResponse
     private $contentType = "";
 
     /**
-     * Property: contentTypeOptions
-     * @var string
-     * @access private
-     */
-    private $contentTypeOptions = "";
-
-    /**
      * Property: contentLength
      * @var integer
      * @access private
@@ -70,32 +49,11 @@ class DecodeResponse implements RestDecodeResponse
     private $contentLength = 0;
 
     /**
-     * Property: xpowered
-     * @var string
-     * @access private
-     */
-    private $xpowered = "";
-
-    /**
-     * Property: accessControl
-     * @var array
-     * @access private
-     */
-    private $accessControl = array();
-
-    /**
      * Property: allow
      * @var array
      * @access private
      */
     private $allow = array();
-
-    /**
-     * Property: cookies
-     * @var array
-     * @access private
-     */
-    private $cookies = array();
 
     /**
      * Property: rawData
@@ -116,39 +74,24 @@ class DecodeResponse implements RestDecodeResponse
      *
      * Sets up the Database Manager Class
      *
-     * @param string $response The response from the RestFull API.
+     * @param array  $curlinfo The cURL information regarding the last transfer.
+     * @param string $response The data returned from the remote sever.
      *
      * @throws RestException If data is not parsed correctly.
      *
      * @access public
      */
-    public function __construct(string $response)
+    public function __construct(array $curlinfo, string $response)
     {
-        // Convert the response string to an array
-        $responsearray = explode("\r\n", $response);
-
-        // Move the http headers to their own array
-        $headerarray = array();
-        $counter = 0;
-        while (($counter < sizeof($responsearray)) and ($responsearray[$counter] != '')) {
-            $headerarray[] = $responsearray[$counter];
-            $counter++;
-        }
-
-        //  Move the data to its own array
-        $counter++;
-        $dataarray = array();
-        while (($counter < sizeof($responsearray)) and ($responsearray[$counter] != '')) {
-            $dataarray[] = $responsearray[$counter];
-            $counter++;
-        }
-
         // Parse the headers
-        $this->parseheaders($headerarray);
+        $headerResult = $this->parseheaders($curlinfo);
+        if ($headerResult === false) {
+            throw new RestException('Failed to parse cURL Info', 1);
+        }
 
         // Parse the data
-        if (count($dataarray) > 0) {
-            $dataresult = $this->parsedata($dataarray);
+        if ($response != "") {
+            $dataresult = $this->parsedata($response);
             if ($dataresult === false) {
                 throw new RestException('Failed to parse data', 1);
             }
@@ -160,70 +103,35 @@ class DecodeResponse implements RestDecodeResponse
      *
      * This function processes the web server response headers
      *
-     * @param array $responsearray The response from the RestFull API.
+     * @param array $curlinfo The cURL information regarding the last transfer.
      *
      * @return boolean True if the responses parsed correctly
      *
      * @access private
      */
-    private function parseheaders(array $responsearray)
+    private function parseheaders(array $curlinfo)
     {
         $parseOk = true;
-        foreach ($responsearray as $value) {
-            if (strpos($value, "HTTP") !== false) {
-                $this->httpresponse = explode(" ", $value, 3);
-            }
 
-            if (strpos($value, "Date:") !== false) {
-                list($name, $time) = explode(": ", $value, 2);
-                $this->date = strtotime($time);
-            }
-
-            if (strpos($value, "Server:") !== false) {
-                list($name, $data) = explode(": ", $value, 2);
-                $this->server = $data;
-            }
-
-            if (strpos($value, "X-Powered-By:") !== false) {
-                list($name, $data) = explode(": ", $value, 2);
-                $this->xpowered = $data;
-            }
-
-            if (strpos($value, "Access-Control-Allow-Origin:") !== false) {
-                list($name, $data) = explode(": ", $value, 2);
-                $this->accessControl['origin'] = $data;
-            }
-
-            if (strpos($value, "Access-Control-Allow-Methods:") !== false) {
-                list($name, $data) = explode(": ", $value, 2);
-                $this->accessControl['methods'] = $data;
-            }
-
-            if (strpos($value, "X-Content-Type-Options:") !== false) {
-                list($name, $data) = explode(": ", $value, 2);
-                $this->contentTypeOptions = $data;
-            }
-
-            if (strpos($value, "Set-Cookie:") !== false) {
-                list($name, $data) = explode(": ", $value, 2);
-                $this->cookies[] = $data;
-            }
-
-            if (strpos($value, "Content-Length:") !== false) {
-                list($name, $data) = explode(": ", $value, 2);
-                $this->contentLength = $data;
-            }
-
-            if (strpos($value, "Content-Type:") !== false) {
-                list($name, $data) = explode(": ", $value, 2);
-                $this->contentType = $data;
-            }
-
-            if (strpos($value, "Allow:") !== false) {
-                list($name, $data) = explode(": ", $value, 2);
-                $this->allow = explode(", ", $data);
-            }
+        if (array_key_exists("http_code", $curlinfo)) {
+            $this->httpresponsecode = $curlinfo["http_code"];
+        } else {
+            $parseOk = false;
         }
+        if (array_key_exists("content_type", $curlinfo)) {
+            $this->contentType = $curlinfo["content_type"];
+        }
+
+        if (array_key_exists("download_content_length", $curlinfo)) {
+            $this->contentLength = $curlinfo["download_content_length"];
+        } else {
+            $parseOk = false;
+        }
+
+        if (array_key_exists("allow", $curlinfo)) {
+            $this->allow = explode(", ", $curlinfo["allow"]);
+        }
+
         return $parseOk;
     }
 
@@ -233,23 +141,19 @@ class DecodeResponse implements RestDecodeResponse
      *
      * This function processes the data returned by the web server
      *
-     * @param array $dataarray The response from the RestFull API.
+     * @param string $response The data returned from the remote sever.
      *
      * @return boolean True if the responses parsed correctly
      *
      * @access private
      */
-    private function parsedata(array $dataarray)
+    private function parsedata(string $response)
     {
         $parseOk = true;
-        $datastr = "";
-        foreach ($dataarray as $value) {
-            $datastr .= $value;
-        }
+        $this->rawData = trim($response);
         if ($this->contentType == "application/json") {
-            $processedData = json_decode($datastr, true);
+            $processedData = json_decode($response, true);
             if ($processedData !== null) {
-                $this->rawData = trim($datastr);
                 $this->processedData = $processedData;
             } else {
                  $parseOk = false;
@@ -263,65 +167,15 @@ class DecodeResponse implements RestDecodeResponse
     /**
      * Get the HTTP response including error status.
      *
-     * This function returns the HTTP response as an array.  The first element contains
-     * the HTTP version.  The second element contains the status code and the third the
-     * status message.
+     * This function returns the HTTP response code as a string
      *
-     * @return array The http response
+     * @return string The http response code
      *
      * @access public
      */
-    public function getHTTPResponce()
+    public function getHTTPResponseCode()
     {
-        return $this->httpresponse;
-    }
-
-    /**
-     * This function returns the date and time the response was received from the server
-     *
-     * @return integer The date and time the response was received from the server
-     *
-     * @access public
-     */
-    public function getHTTPDate()
-    {
-        return $this->date;
-    }
-
-    /**
-     * This function returns the server description
-     *
-     * @return string Server description
-     *
-     * @access public
-     */
-    public function getServer()
-    {
-        return $this->server;
-    }
-
-    /**
-     * This function returns the X-Powered-By description
-     *
-     * @return string X-Powered-By description
-     *
-     * @access public
-     */
-    public function getXPoweredBy()
-    {
-        return $this->xpowered;
-    }
-
-    /**
-     * This function returns the Access-Control Data Array
-     *
-     * @return array Access-Control data
-     *
-     * @access public
-     */
-    public function getAccessControl()
-    {
-        return $this->accessControl;
+        return $this->httpresponsecode;
     }
 
     /**
@@ -334,31 +188,6 @@ class DecodeResponse implements RestDecodeResponse
     public function getContentType()
     {
         return $this->contentType;
-    }
-
-    /**
-     * This function returns the content type options returned by the server
-     *
-     * @return string Content type options returned by the server
-     *
-     * @access public
-     */
-    public function getContentTypeOptions()
-    {
-        return $this->contentTypeOptions;
-    }
-
-
-    /**
-     * This function returns the Cookies
-     *
-     * @return array Cookies
-     *
-     * @access public
-     */
-    public function getCookies()
-    {
-        return $this->cookies;
     }
 
     /**

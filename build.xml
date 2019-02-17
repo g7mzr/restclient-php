@@ -264,6 +264,20 @@
             <arg value="vendor/autoload.php" />
         </exec>
     </target>
+
+    <target name="alltests"
+            depends="prepare"
+            description="Run all tests with PHPUnit">
+        <exec executable="${toolsdir}phpunit" checkreturn="true" passthru="true" logoutput="true">
+            <arg value="--configuration"/>
+            <arg path="${basedir}/build/phpunit.xml"/>
+            <arg value="--testsuite" />
+            <arg value="unit,restapi" />
+            <arg value="--bootstrap" />
+            <arg value="vendor/autoload.php" />
+        </exec>
+    </target>
+
     <!-- ================================================================== -->
     <!--                       Documentation Targets                        -->
     <!-- ================================================================== -->
@@ -293,14 +307,13 @@
     <target name="code-analysis"
             depends="lint, phploc-ci, pdepend, phpmd-ci, phpcs-ci, phpcpd-ci"/>
 
-    <target name="unit-test"
-            depends="prepare, unit"/>
+    <target name="unit-test" depends="prepare, unit"/>
 
-    <target name="api-test"
-            depends="prepare, rest"/>
+    <target name="api-test" depends="prepare, rest"/>
 
-            <target name="documentation"
-            depends="code-analysis, unit-test, phpdox"/>
+    <target name="all-tests" depends="prepare, alltests"/>
+
+    <target name="documentation" depends="code-analysis, unit-test, phpdox"/>
 
     <!-- Default Build Target -->
     <target name="build"

@@ -35,7 +35,7 @@ interface RestAPIClient
      *
      * @param RestRequest $restrequest The HTTP Request Data for the GET Method.
      *
-     * @return boolean True if the command executed correctly.  False otherwise
+     * @return boolean True if the command executed correctly. restclient error otherwise
      *
      * @access public
      */
@@ -48,7 +48,7 @@ interface RestAPIClient
      *
      * @param RestRequest $restrequest The HTTP Request Data for the HEAD Method.
      *
-     * @return boolean True if the command executed correctly.  False otherwise
+     * @return boolean True if the command executed correctly. restclient error otherwise
      *
      * @access public
      */
@@ -61,7 +61,7 @@ interface RestAPIClient
      *
      * @param RestRequest $restrequest The HTTP Request Data for the OPTIONS Method.
      *
-     * @return boolean True if the command executed correctly.  False otherwise
+     * @return boolean True if the command executed correctly.  restclient error otherwise
      *
      * @access public
      */
@@ -75,7 +75,7 @@ interface RestAPIClient
      *
      * @param RestRequest $restrequest The HTTP Request Data for the PUT Method.
      *
-     * @return boolean True if the command executed correctly.  False otherwise
+     * @return boolean True if the command executed correctly.  restclient error otherwise
      *
      * @access public
      */
@@ -89,12 +89,24 @@ interface RestAPIClient
      *
      * @param RestRequest $restrequest The HTTP Request Data for the POST Method.
      *
-     * @return boolean True if the command executed correctly.  False otherwise
+     * @return boolean True if the command executed correctly.  restclient error otherwise
      *
      * @access public
      */
     public function httpPost(Request $restrequest);
 
+    /**
+     * httpDelete Method
+     *
+     * This method implements the HTTP DELETE Method
+     *
+     * @param RestRequest $restrequest The HTTP Request Data for the DELETE Method.
+     *
+     * @return boolean True if the command executed correctly.  restclient error otherwise
+     *
+     * @access public
+     */
+    public function httpDelete(Request $restrequest);
 
 
 
@@ -108,17 +120,4 @@ interface RestAPIClient
      * @access public
      */
     public function getResponse();
-
-    /**
-     * getError
-     *
-     * Returns the APIClient Error in the form of an array with the following keys:
-     * code - The error code
-     * Message - The error Message
-     *
-     * @return array Containing the error Message and code.
-     *
-     * @access public
-     */
-    public function getError();
 }

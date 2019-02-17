@@ -20,21 +20,22 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
 use g7mzr\restclient\common\RestException;
+use \g7mzr\restclient\http\response\DecodeResponse;
 
 /**
  * DecodeResponse Class Unit Tests
  *
  * This class contains the unit tests for the RESTCLIENT HTTP Response decoder class.
  */
-class DecodeResponceTest extends TestCase
+class DecodeResponseTest extends TestCase
 {
 
     /**
-     * Property:  decodeResponce
-     * @var \g7mzr\restclient\http\response\DecodeResponce
+     * Property:  decodeRespone
+     * @var \g7mzr\restclient\http\response\DecodeResponse
      * @access private
      */
-    private $decodeResponce;
+    private $decodeResponse;
 
     /**
      * Property:  responseData
@@ -62,24 +63,14 @@ class DecodeResponceTest extends TestCase
     {
         $this->data = '{"name":"Test Application","Version":"4.5.0","API":"1.2.0"}';
 
-        $this->responseData['Date'] = "Sat, 19 Jan 2019 12:52:44 GMT";
-        $this->responseData['Server'] = "Apache/2.4.23 (Linux/SUSE)";
-        $this->responseData['X-Powered-By'] = "Mono";
-        $this->responseData['Access-Control-Allow-Origin'] = "Origin";
-        $this->responseData['Access-Control-Allow-Methods'] = "Methods";
-        $this->responseData['X-Content-Type-Options'] = "nosniff";
-        $this->responseData['Set-Cookie'] = "webdatabase=f9b0b9702e11e12fdb1df6e1ffc58b74; path=/; HttpOnly";
-        $this->responseData['Content-Length'] = "" . strlen($this->data);
-        $this->responseData['Content-Type'] = "application/json";
+        $this->responseData['http_code'] = "200";
+        $this->responseData['download_content_length'] = strlen($this->data);
+        $this->responseData['content_type'] = "application/json";
 
-        $responsestring = "HTTP/1.1 200 OK\r\n";
-        foreach ($this->responseData as $key => $value) {
-            $responsestring .= $key . ": " . $value . "\r\n";
-        }
-        $responsestring .= "\r\n";
-        $responsestring .= $this->data ."\r\n";
-
-        $this->decodeResponce = new \g7mzr\restclient\http\response\DecodeResponse($responsestring);
+        $this->decodeResponse = new DecodeResponse(
+            $this->responseData,
+            $this->data
+        );
     }
 
     /**
@@ -106,14 +97,12 @@ class DecodeResponceTest extends TestCase
      */
     public function testHTTPResponce()
     {
-        $httpResult = $this->decodeResponce->getHTTPResponce();
-        $this->assertEquals("HTTP/1.1", $httpResult[0]);
-        $this->assertEquals("200", $httpResult[1]);
-        $this->assertEquals("OK", $httpResult[2]);
+        $httpResult = $this->decodeResponse->getHTTPResponseCode();
+        $this->assertEquals("200", $httpResult);
     }
 
     /**
-     * This function tests that the date is encodes correctly
+     * This function tests that an error is thrown if the HTTP response is missing
      *
      * @group unittest
      * @group decode
@@ -122,100 +111,20 @@ class DecodeResponceTest extends TestCase
      *
      * @access public
      */
-    public function testDate()
+    public function testMissingHTTPResponse()
     {
-        $expectedResult = strtotime($this->responseData['Date']);
-        $actualResult = $this->decodeResponce->getHTTPDate();
-        $this->assertEquals($expectedResult, $actualResult);
-    }
+        $responsestring = '{"name":"Test Application","Version""4.5.0","API":"1.2.0"}';
+        //$responseData['http_code'] = "200";
+        $responseData['download_content_length'] = strlen($this->data);
+        $responseData['content_type'] = "application/json";
 
-    /**
-     * This function tests that the Server Name is correct
-     *
-     * @group unittest
-     * @group decode
-     *
-     * @return void
-     *
-     * @access public
-     */
-    public function testServer()
-    {
-        $expectedResult = $this->responseData['Server'];
-        $actualResult = $this->decodeResponce->getServer();
-        $this->assertEquals($expectedResult, $actualResult);
-    }
-
-    /**
-     * This function tests that the X-Powered-By Name is correct
-     *
-     * @group unittest
-     * @group decode
-     *
-     * @return void
-     *
-     * @access public
-     */
-    public function testXPoweredBy()
-    {
-        $expectedResult = $this->responseData['X-Powered-By'];
-        $actualResult = $this->decodeResponce->getXPoweredBy();
-        $this->assertEquals($expectedResult, $actualResult);
-    }
-
-    /**
-     * This function tests that the Access Control Data is Correct
-     *
-     * @group unittest
-     * @group decode
-     *
-     * @return void
-     *
-     * @access public
-     */
-    public function testAccessControl()
-    {
-        $expectedResult = array(
-            "origin" => $this->responseData['Access-Control-Allow-Origin'],
-            "methods" => $this->responseData['Access-Control-Allow-Methods']
-        );
-        $actualResult = $this->decodeResponce->getAccessControl();
-        $this->assertEquals($expectedResult['origin'], $actualResult['origin']);
-        $this->assertEquals($expectedResult['methods'], $actualResult['methods']);
-    }
-
-    /**
-     * This function tests that the Content Type options are correct
-     *
-     * @group unittest
-     * @group decode
-     *
-     * @return void
-     *
-     * @acccess public
-     */
-    public function testContentTypeOptions()
-    {
-        $expectedResult = $this->responseData['X-Content-Type-Options'];
-        $actualResult = $this->decodeResponce->getContentTypeOptions();
-        $this->assertEquals($expectedResult, $actualResult);
-    }
-
-    /**
-     * This function tests that the Cookies received are decoded correctly
-     *
-     * @group unittest
-     * @group decode
-     *
-     * @return void
-     *
-     * @access public
-     */
-    public function testCookies()
-    {
-        $expectedResult = $this->responseData['Set-Cookie'];
-        $actualResult = $this->decodeResponce->getCookies();
-        $this->assertEquals($expectedResult, $actualResult[0]);
+        try {
+            $decodeResponse = new DecodeResponse($responseData, $responsestring);
+            $this->fail("Exception was not thrown");
+        } catch (\Throwable $exc) {
+            $this->assertEquals("Failed to parse cURL Info", $exc->getMessage());
+            $this->assertEquals(1, $exc->getCode());
+        }
     }
 
     /**
@@ -230,11 +139,35 @@ class DecodeResponceTest extends TestCase
      */
     public function testContentLength()
     {
-        $expectedResult = $this->responseData['Content-Length'];
-        $actualResult = $this->decodeResponce->getContentLength();
+        $expectedResult = $this->responseData['download_content_length'];
+        $actualResult = $this->decodeResponse->getContentLength();
         $this->assertEquals($expectedResult, $actualResult);
     }
 
+    /**
+     * This function tests that an error is thrown if the content length is missing
+     *
+     * @group unittest
+     * @group decode
+     *
+     * @return void
+     *
+     * @access public
+     */
+    public function testMissingContentLength()
+    {
+        $responsestring = '{"name":"Test Application","Version""4.5.0","API":"1.2.0"}';
+        $responseData['http_code'] = "200";
+        $responseData['content_type'] = "application/json";
+
+        try {
+            $decodeResponse = new DecodeResponse($responseData, $responsestring);
+            $this->fail("Exception was not thrown");
+        } catch (\Throwable $exc) {
+            $this->assertEquals("Failed to parse cURL Info", $exc->getMessage());
+            $this->assertEquals(1, $exc->getCode());
+        }
+    }
 
     /**
      * This function tests that the content type is processed correctly
@@ -248,8 +181,8 @@ class DecodeResponceTest extends TestCase
      */
     public function testContentType()
     {
-        $expectedResult = $this->responseData['Content-Type'];
-        $actualResult = $this->decodeResponce->getContentType();
+        $expectedResult = $this->responseData['content_type'];
+        $actualResult = $this->decodeResponse->getContentType();
         $this->assertEquals($expectedResult, $actualResult);
     }
 
@@ -266,7 +199,7 @@ class DecodeResponceTest extends TestCase
     public function testRawData()
     {
         $expectedResult = $this->data;
-        $actualResult = $this->decodeResponce->getRawData();
+        $actualResult = $this->decodeResponse->getRawData();
         $this->assertEquals($expectedResult, $actualResult);
     }
 
@@ -283,7 +216,7 @@ class DecodeResponceTest extends TestCase
     public function testProcessedData()
     {
         $expectedResult = json_decode($this->data, true);
-        $actualResult = $this->decodeResponce->getProcessedData();
+        $actualResult = $this->decodeResponse->getProcessedData();
 
         foreach ($expectedResult as $key => $value) {
             $this->assertEquals($value, $actualResult[$key]);
@@ -303,17 +236,12 @@ class DecodeResponceTest extends TestCase
     public function testOptions()
     {
         $this->responseData['Content-Length'] = 0;
-        $this->responseData['Allow'] = "GET, HEAD, OPTIONS";
-        $responsestring = "HTTP/1.1 200 OK\r\n";
-        foreach ($this->responseData as $key => $value) {
-            $responsestring .= $key . ": " . $value . "\r\n";
-        }
-        $responsestring .= "\r\n\r\n";
+        $this->responseData['allow'] = "GET, HEAD, OPTIONS";
 
-        $decodeResponce = new \g7mzr\restclient\http\response\DecodeResponse($responsestring);
+        $decodeResponse = new DecodeResponse($this->responseData, "");
 
         $expectedResult = array('GET', 'HEAD', 'OPTIONS');
-        $actualResult = $decodeResponce->getAllow();
+        $actualResult = $decodeResponse->getAllow();
 
         foreach ($expectedResult as $key => $value) {
             $this->assertEquals($value, $actualResult[$key]);
@@ -333,15 +261,10 @@ class DecodeResponceTest extends TestCase
      */
     public function testInvalidData()
     {
-        $responsestring = "HTTP/1.1 200 OK\r\n";
-        foreach ($this->responseData as $key => $value) {
-            $responsestring .= $key . ": " . $value . "\r\n";
-        }
-        $responsestring .= "\r\n";
-        $responsestring .= '{"name":"Test Application","Version""4.5.0","API":"1.2.0"}' ."\r\n";
+        $responsestring = '{"name":"Test Application","Version""4.5.0","API":"1.2.0"}';
 
         try {
-            $decodeResponce = new \g7mzr\restclient\http\response\DecodeResponse($responsestring);
+            $decodeResponse = new DecodeResponse($this->responseData, $responsestring);
             $this->fail("Exception was not thrown");
         } catch (\Throwable $exc) {
             $this->assertEquals("Failed to parse data", $exc->getMessage());
@@ -361,16 +284,11 @@ class DecodeResponceTest extends TestCase
      */
     public function testInvalidDataType()
     {
-        $this->responseData['Content-Type'] = "application/false";
-        $responsestring = "HTTP/1.1 200 OK\r\n";
-        foreach ($this->responseData as $key => $value) {
-            $responsestring .= $key . ": " . $value . "\r\n";
-        }
-        $responsestring .= "\r\n";
-        $responsestring .= '{"name":"Test Application","Version":"4.5.0","API":"1.2.0"}' ."\r\n";
+        $this->responseData['content_type'] = "application/false";
+        $responsestring = '{"name":"Test Application","Version":"4.5.0","API":"1.2.0"}';
 
         try {
-            $decodeResponce = new \g7mzr\restclient\http\response\DecodeResponse($responsestring);
+            $decodeResponse = new DecodeResponse($this->responseData, $responsestring);
             $this->fail("Exception was not thrown");
         } catch (\Throwable $exc) {
             $this->assertEquals("Failed to parse data", $exc->getMessage());

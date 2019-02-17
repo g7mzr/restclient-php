@@ -10,10 +10,10 @@
  * @author   Sandy McNeil <g7mzrdev@gmail.com>
  * @copyright (c) 2019, Sandy McNeil
  * @license https://github.com/g7mzr/restclient-php/blob/master/LICENSE GNU General Public License v3.0
- *
  */
 
 require_once 'restapi.class.php';
+
 /**
  * Sent the HTTP Headers to the client.
  */
@@ -21,7 +21,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: *");
 header("X-Content-Type-Options: nosniff");
 header("Content-Type: application/json");
-
+setcookie("apitest", "testdata");
 
 /**
  * This section implements the API.  Certain Changes have been made to allow testing

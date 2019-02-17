@@ -27,51 +27,13 @@ interface RestDecodeResponse
     /**
      * Get the HTTP response including error status.
      *
-     * This function returns the HTTP response as an array.  The first element contains
-     * the HTTP version.  The second element contains the status code and the third the
-     * status message.
+     * This function returns the HTTP response code as a string
      *
-     * @return array The http response
+     * @return string The http response code
      *
      * @access public
      */
-    public function getHTTPResponce();
-
-    /**
-     * This function returns the date and time the response was received from the server
-     *
-     * @return integer The date and time the response was received from the server
-     *
-     * @access public
-     */
-    public function getHTTPDate();
-
-    /**
-     * This function returns the server description
-     *
-     * @return string Server description
-     *
-     * @access public
-     */
-    public function getServer();
-
-    /**
-     * This function returns the X-Powered-By description
-     *
-     * @return string X-Powered-By description
-     *
-     * @access public
-     */
-    public function getXPoweredBy();
-
-    /**
-     * This function returns the Access-Control Data Array
-     *
-     * @return array Access-Control data
-     *
-     * @access public
-     */
-    public function getAccessControl();
+    public function getHTTPResponsecode();
 
     /**
      * This function returns the content type returned by the server
@@ -81,24 +43,6 @@ interface RestDecodeResponse
      * @access public
      */
     public function getContentType();
-
-    /**
-     * This function returns the content type options returned by the server
-     *
-     * @return string Content type options returned by the server
-     *
-     * @access public
-     */
-    public function getContentTypeOptions();
-
-    /**
-     * This function returns the Cookies
-     *
-     * @return array Cookies
-     *
-     * @access public
-     */
-    public function getCookies();
 
     /**
      * This function returns the length of the returned data

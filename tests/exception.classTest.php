@@ -36,7 +36,7 @@ class RESTExceptionTest extends TestCase
      *
      * @access protected
      */
-    protected function setUp()
+    protected function setUp(): void
     {
     }
 
@@ -48,7 +48,7 @@ class RESTExceptionTest extends TestCase
      *
      * @access protected
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
     }
 

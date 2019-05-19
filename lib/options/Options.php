@@ -58,7 +58,7 @@ class Options implements RestOptions
      */
     public function setBaseURL(string $url)
     {
-        if ($url[strlen($url)-1] != "/") {
+        if ($url[strlen($url) - 1] != "/") {
             $url .= '/';
         }
         $this->set(RestOptionsType::REST_BASE_URL, $url);

@@ -43,7 +43,7 @@ class ErrorTest extends TestCase
      *
      * @access protected
      */
-    protected function setUp()
+    protected function setUp(): void
     {
     }
 
@@ -55,7 +55,7 @@ class ErrorTest extends TestCase
      *
      * @access protected
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
     }
 

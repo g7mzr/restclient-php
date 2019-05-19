@@ -54,7 +54,7 @@ class RestAPITest extends TestCase
      *
      * @access protected
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->options = new Options();
         $this->options->setBaseURL(URL);
@@ -74,7 +74,7 @@ class RestAPITest extends TestCase
      *
      * @access protected
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
     }
 
@@ -274,7 +274,7 @@ class RestAPITest extends TestCase
         $runok = $apiclient->httpGet($getrequest);
         $this->assertTrue(Common::isError($runok));
         $this->assertEquals(3, $runok->getCode());
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Could not resolve host:',
             $runok->getMessage()
         );
@@ -394,7 +394,7 @@ class RestAPITest extends TestCase
         $runok = $apiclient->httpOptions($optionsrequest);
         $this->assertTrue(Common::isError($runok));
         $this->assertEquals(3, $runok->getCode());
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Could not resolve host:',
             $runok->getMessage()
         );
@@ -509,7 +509,7 @@ class RestAPITest extends TestCase
         $runok = $apiclient->httpHead($getrequest);
         $this->assertTrue(Common::isError($runok));
         $this->assertEquals(3, $runok->getCode());
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Could not resolve host:',
             $runok->getMessage()
         );
@@ -769,7 +769,7 @@ class RestAPITest extends TestCase
         $runok = $apiclient->httpPost($postrequest);
         $this->assertTrue(Common::isError($runok));
         $this->assertEquals(3, $runok->getCode());
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Could not resolve host:',
             $runok->getMessage()
         );
@@ -801,7 +801,7 @@ class RestAPITest extends TestCase
         $runok = $this->apiclient->httpPut($putrequest);
         $this->assertTrue(Common::isError($runok));
         $this->assertEquals(4, $runok->getCode());
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Arguments have not been included for PUT COMMAND',
             $runok->getMessage()
         );
@@ -990,7 +990,7 @@ class RestAPITest extends TestCase
         $runok = $apiclient->httpPut($putrequest);
         $this->assertTrue(Common::isError($runok));
         $this->assertEquals(3, $runok->getCode());
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Could not resolve host:',
             $runok->getMessage()
         );
@@ -1017,7 +1017,7 @@ class RestAPITest extends TestCase
         $runok = $this->apiclient->httpDelete($deleterequest);
         $this->assertTrue(Common::isError($runok));
         $this->assertEquals(4, $runok->getCode());
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Arguments have not been included for DELETE COMMAND',
             $runok->getMessage()
         );
@@ -1151,7 +1151,7 @@ class RestAPITest extends TestCase
         $runok = $apiclient->httpDelete($deleterequest);
         $this->assertTrue(Common::isError($runok));
         $this->assertEquals(3, $runok->getCode());
-        $this->assertContains(
+        $this->assertStringContainsString(
             'Could not resolve host:',
             $runok->getMessage()
         );

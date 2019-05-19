@@ -178,7 +178,7 @@ class APIClient implements RestAPIClient
         $this->headers = array();
 
         $ch = curl_init();
-        if ($ch ===false) {
+        if ($ch === false) {
             $code = 1;
             $message = 'Unable to initalise cURL resource';
             return Common::raiseError($message, $code);
@@ -238,7 +238,7 @@ class APIClient implements RestAPIClient
         $this->headers = array();
 
         $ch = curl_init();
-        if ($ch ===false) {
+        if ($ch === false) {
             $code = 1;
             $message = 'Unable to initalise cURL resource';
             return Common::raiseError($message, $code);
@@ -308,7 +308,7 @@ class APIClient implements RestAPIClient
         $this->headers = array();
 
         $ch = curl_init();
-        if ($ch ===false) {
+        if ($ch === false) {
             $code = 1;
             $message = 'Unable to initalise cURL resource';
             return Common::raiseError($message, $code);
@@ -382,7 +382,7 @@ class APIClient implements RestAPIClient
         }
 
         $ch = curl_init();
-        if ($ch ===false) {
+        if ($ch === false) {
             $code = 1;
             $message = 'Unable to initalise cURL resource';
             return Common::raiseError($message, $code);

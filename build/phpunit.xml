@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/6.3/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/8.1/phpunit.xsd"
     backupGlobals="true"
     backupStaticAttributes="false"
     cacheTokens="false"
@@ -10,8 +10,6 @@
     convertNoticesToExceptions="true"
     convertWarningsToExceptions="true"
     forceCoversAnnotation="false"
-    mapTestClassNameToCoveredClassName="false"
-
     processIsolation="false"
     stopOnError="false"
     stopOnFailure="false"
@@ -41,11 +39,10 @@
         <var name="unittest" value="true" />
     </php>
     <logging>
-      <log type="coverage-html" target="coverage" title="Webtemplate"
-            charset="UTF-8" yui="true" highlight="true"/>
+      <log type="coverage-html" target="coverage" />
       <log type="coverage-clover" target="logs/clover.xml"/>
       <log type="coverage-crap4j" target="logs/crap4j.xml"/>
       <log type="coverage-xml" target="logs/coverage"/>
-      <log type="junit" target="logs/junit.xml" logIncompleteSkipped="false"/>
+      <log type="junit" target="logs/junit.xml" />
     </logging>
 </phpunit>

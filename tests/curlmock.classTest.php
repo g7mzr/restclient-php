@@ -57,7 +57,7 @@ class CurlInitTest extends TestCase
      *
      * @access protected
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->options = new Options();
         $this->options->setBaseURL(URL);
@@ -78,7 +78,7 @@ class CurlInitTest extends TestCase
      *
      * @access protected
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
     }
 

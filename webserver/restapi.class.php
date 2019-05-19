@@ -69,7 +69,7 @@ class RESTapi
      * @var    array
      * @access protected
      */
-    protected $requestdata= array();
+    protected $requestdata = array();
 
     /**
      * Property: contenttype
@@ -123,7 +123,7 @@ class RESTapi
                 $request = $this->cleanInputs($post);
 
                 // Convert $file from JSON to an PHP array
-                $filearray =json_decode($file, true);
+                $filearray = json_decode($file, true);
                 break;
             case 'GET':
             case 'DELETE':
@@ -276,6 +276,6 @@ class RESTapi
             500 => 'Internal Server Error',
             501 => 'Not Implemented'
         );
-        return ($status[$code])?$status[$code]:$status[500];
+        return ($status[$code]) ? $status[$code] : $status[500];
     }
 }

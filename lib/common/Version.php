@@ -29,7 +29,7 @@ class Version
     const NAME = "PHP RESTFull API Client";
     const VERSION = "0.1.0";
 
-    const USERAGENT = self::NAME . "/" . self::VERSION . " " . PHP_OS . " PHP:". PHP_VERSION;
+    const USERAGENT = self::NAME . "/" . self::VERSION . " " . PHP_OS . " PHP:" . PHP_VERSION;
 
     /**
      * RestRequestType Class Constructor

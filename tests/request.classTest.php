@@ -43,7 +43,7 @@ class RestRequestTest extends TestCase
      *
      * @access protected
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->restRequest = new Request();
     }
@@ -56,7 +56,7 @@ class RestRequestTest extends TestCase
      *
      * @access protected
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
     }
 
@@ -77,7 +77,7 @@ class RestRequestTest extends TestCase
         $this->assertEquals("", $defaultResult);
 
         // Set the endpoint
-        $testData ="api/v1/version";
+        $testData = "api/v1/version";
         $setResult = $this->restRequest->setEndPoint($testData);
         $this->assertTrue(is_a($setResult, 'g7mzr\restclient\RestRequest'));
 
@@ -103,7 +103,7 @@ class RestRequestTest extends TestCase
         $this->assertEquals("application/json", $defaultResult);
 
         // Set the endpoint
-        $testData ="application/xml";
+        $testData = "application/xml";
         $setResult = $this->restRequest->setAcceptHeader($testData);
         $this->assertTrue(is_a($setResult, 'g7mzr\restclient\RestRequest'));
 

@@ -43,7 +43,7 @@ class RestOptionsTest extends TestCase
      *
      * @access protected
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->restOptions = new Options();
     }
@@ -56,7 +56,7 @@ class RestOptionsTest extends TestCase
      *
      * @access protected
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
     }
 
@@ -152,7 +152,7 @@ class RestOptionsTest extends TestCase
     {
         // Test the default UserAgent String is returned
         $defaultResult = $this->restOptions->getUserAgent();
-        $this->assertContains("PHP RESTFull API Client", $defaultResult);
+        $this->assertStringContainsString("PHP RESTFull API Client", $defaultResult);
 
         // Set the User Agent
         $testData = "PHP RESTCLIENT 1.0/cURL";
@@ -178,7 +178,7 @@ class RestOptionsTest extends TestCase
     {
         // Test the default UserAgent String is returned
         $defaultResult = $this->restOptions->getCookiefile();
-        $this->assertContains("", $defaultResult);
+        $this->assertStringContainsString("", $defaultResult);
 
         // Set the User Agent
         $testData = __FILE__;

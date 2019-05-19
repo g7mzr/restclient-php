@@ -59,7 +59,7 @@ class DecodeResponseTest extends TestCase
      *
      * @access protected
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->data = '{"name":"Test Application","Version":"4.5.0","API":"1.2.0"}';
 
@@ -81,7 +81,7 @@ class DecodeResponseTest extends TestCase
      *
      * @access protected
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
     }
 

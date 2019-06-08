@@ -1,5 +1,5 @@
 {
-    "name": "g7mzr/restclient",
+    "name": "g7mzr/restclient-php",
     "description": "This is a composer module for accessing RESTFull APIs",
     "license": "GPL-3.0-only",
     "authors": [

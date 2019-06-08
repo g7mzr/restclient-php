@@ -19,7 +19,7 @@ To load the latest release add the following to your composer.json file
         "repositories": [
             {
                 "type": "vcs",
-                "url":  "git@github.com:g7mzr/restclient-php.git"
+                "url":  "https://github.com/g7mzr/restclient-php.git"
             }
         ]
     }
@@ -33,7 +33,7 @@ To load the development version add the following to your compose.json file
         "repositories": [
             {
                 "type": "vcs",
-                "url":  "git@github.com:g7mzr/restclient-php.git"
+                "url":  "https://github.com/g7mzr/restclient-php.git"
             }
         ]
     }

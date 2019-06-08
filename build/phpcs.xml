@@ -3,10 +3,10 @@
     <arg name="colors" /> <!-- Use Colours -->
     <arg value="sp" />  <!-- Show progress.  Show shifs in report -->
 
-    <description>Webtemplate Coding Standard</description>
+    <description>RestFul PHP Clent Coding Standard</description>
 
     <!-- Rule Sets -->
-        <!--  Default Standard is PSR2 -->
+        <!--  Default Standard is PSR12 -->
         <rule ref="PSR12"/>
 
         <rule ref="Squiz.Commenting.FunctionComment" />

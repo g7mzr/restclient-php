@@ -8,3 +8,5 @@ cache.properties
 /vendor/
 /bin/
 composer.phar
+.phpunit.result.cache
+

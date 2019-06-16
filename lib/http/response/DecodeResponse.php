@@ -179,6 +179,26 @@ class DecodeResponse implements RestDecodeResponse
     }
 
     /**
+     * Get the HTTP response message
+     *
+     * This function returns a more descriptive message corresponding to http
+     * response code retrieved by getHTTPResonseCode()
+     *
+     * @return string Descriptive message corresponding to the response code.
+     *
+     * @access public
+     */
+    public function getHTTPResponseMessage()
+    {
+        $http_codes = parse_ini_file(__DIR__ . "/httpResponseCodes.ini");
+        if (array_key_exists($this->httpresponsecode, $http_codes)) {
+            return $http_codes[$this->httpresponsecode];
+        } else {
+            return sprintf("HTTP Response code %s not found", $this->httpresponsecode);
+        }
+    }
+
+    /**
      * This function returns the content type returned by the server
      *
      * @return string Content type returned by the server

@@ -33,7 +33,19 @@ interface RestDecodeResponse
      *
      * @access public
      */
-    public function getHTTPResponsecode();
+    public function getHTTPResponseCode();
+
+    /**
+     * Get the HTTP response message
+     *
+     * This function returns a more descriptive message corresponding to http
+     * response code retrieved by getHTTPResonseCode()
+     *
+     * @return string Descriptive message corresponding to the response code.
+     *
+     * @access public
+     */
+    public function getHTTPResponseMessage();
 
     /**
      * This function returns the content type returned by the server

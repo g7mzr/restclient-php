@@ -102,6 +102,47 @@ class DecodeResponseTest extends TestCase
     }
 
     /**
+     * This function tests that the HTTP response code message is correct
+     *
+     * @group unittest
+     * @group decode
+     *
+     * @return void
+     *
+     * @access public
+     */
+    public function testHTTPResponseMessage()
+    {
+        $httpResult = $this->decodeResponse->getHTTPResponseMessage();
+        $this->assertEquals("OK", $httpResult);
+    }
+
+
+    /**
+     * This function tests that an error message is retrieved if the response code
+     * is invalid
+     *
+     * @group unittest
+     * @group decode
+     *
+     * @return void
+     *
+     * @access public
+     */
+    public function testHTTPResponseMessageInvalidCode()
+    {
+        $responsestring = '{"name":"Test Application","Version":"4.5.0","API":"1.2.0"}';
+        $responseData['http_code'] = "900";
+        $responseData['download_content_length'] = strlen($responsestring);
+        $responseData['content_type'] = "application/json";
+
+        $decodeResponse = new DecodeResponse($responseData, $responsestring);
+
+        $httpResult = $decodeResponse->getHTTPResponseMessage();
+        $this->assertEquals("HTTP Response code 900 not found", $httpResult);
+    }
+
+    /**
      * This function tests that an error is thrown if the HTTP response is missing
      *
      * @group unittest
